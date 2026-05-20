@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+### Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -12,12 +12,6 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 
 ### NetBeans ###
 /nbproject/private/
@@ -31,3 +25,21 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Security - NEVER commit these! ###
+*.pem
+*.key
+*.p12
+.env
+.env.*
+
+### Local config ###
+application-local.properties
+application-local.yml
+*-local.properties
+
+### Docker ###
+postgres-data/
+
+### Mac ###
+.DS_Store
