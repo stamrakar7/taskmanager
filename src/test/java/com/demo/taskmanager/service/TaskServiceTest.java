@@ -55,7 +55,7 @@ class TaskServiceTest {
             .thenReturn(task);
 
         TaskDto.Response response =
-            taskService.createTask(taskRequest);
+            taskService.createTask(taskRequest,null);
 
         assertNotNull(response);
         assertEquals("Test Task", response.getTitle());

@@ -18,10 +18,13 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<TaskDto.Response> createTask(
-            @RequestBody TaskDto.Request request) {
+            @RequestBody TaskDto.Request request,
+            @RequestHeader("Authorization") String authHeader) {
+        // Extract token from "Bearer <token>"
+        String token = authHeader.substring(7);
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(taskService.createTask(request));
+            .body(taskService.createTask(request, token));
     }
 
     @GetMapping

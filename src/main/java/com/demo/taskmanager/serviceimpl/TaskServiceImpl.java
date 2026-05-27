@@ -1,10 +1,12 @@
 package com.demo.taskmanager.serviceimpl;
 
+import com.demo.taskmanager.dto.AuthUserDto;
 import com.demo.taskmanager.dto.TaskDto;
 import com.demo.taskmanager.entity.Task;
 import com.demo.taskmanager.exception.ResourceNotFoundException;
 import com.demo.taskmanager.repository.TaskRepository;
 import com.demo.taskmanager.repository.UserRepository;
+import com.demo.taskmanager.service.AuthServiceClient;
 import com.demo.taskmanager.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +22,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private AuthServiceClient authServiceClient;
 
     @Override
-    public TaskDto.Response createTask(TaskDto.Request request) {
+    public TaskDto.Response createTask( TaskDto.Request request, String token) {
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -34,6 +39,15 @@ public class TaskServiceImpl implements TaskService {
         task.setCreatedById(request.getCreatedById());
         task.setCreatedAt(LocalDateTime.now());
         task.setUpdatedAt(LocalDateTime.now());
+
+        // Get current user from auth-service!
+        AuthUserDto currentUser = getCurrentUser(token);
+        if (currentUser != null) {
+            System.out.println(
+                "Task created by: " + currentUser.getEmail()
+                + " Role: " + currentUser.getRole());
+        }
+
         return mapToResponse(taskRepository.save(task));
     }
 
@@ -118,6 +132,11 @@ public class TaskServiceImpl implements TaskService {
             responses.add(mapToResponse(task));
         }
         return responses;
+    }
+    
+    public AuthUserDto getCurrentUser(String token) {
+        if (token == null) return null;
+        return authServiceClient.validateAndGetUser(token);
     }
 
     private TaskDto.Response mapToResponse(Task task) {

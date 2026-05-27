@@ -5,7 +5,7 @@ import com.demo.taskmanager.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,23 +31,20 @@ public class SecurityConfig {
             throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(s -> s.sessionCreationPolicy(
-                SessionCreationPolicy.STATELESS))
+            .sessionManagement(s -> s
+                .sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS))
             .exceptionHandling(ex -> ex
-                    .authenticationEntryPoint(
-                        (request, response, authException) ->
-                            response.sendError(401, "Unauthorized"))
+                .authenticationEntryPoint(
+                    (request, response, authException) ->
+                        response.sendError(401, "Unauthorized"))
             )
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints
                 .requestMatchers(
-                    "/auth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**").permitAll()
-                // Admin only
                 .requestMatchers("/api/users/**")
                     .hasRole("ADMIN")
-                // Authenticated users
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter,
@@ -63,7 +60,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
+            AuthenticationConfiguration config)
+            throws Exception {
         return config.getAuthenticationManager();
     }
 }
